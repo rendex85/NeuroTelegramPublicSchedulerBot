@@ -34,7 +34,7 @@ def post_img():
                 result = session.exec(select(Post).where(Post.img_type == "anime"))
         else:
             time.sleep(3600 + random.randint(60, 1860))
-
+            continue
         post = result.first()
         media_append = []
         if post:
