@@ -27,10 +27,13 @@ def post_img():
     while True:
         time.sleep(10)
         now_hour = datetime.datetime.now().hour
-        if now_hour % 4 == 0:
-            result = session.exec(select(Post).where(Post.img_type == "meme"))
+        if now_hour >= 10:
+            if now_hour % 4 == 0:
+                result = session.exec(select(Post).where(Post.img_type == "meme"))
+            else:
+                result = session.exec(select(Post).where(Post.img_type == "anime"))
         else:
-            result = session.exec(select(Post).where(Post.img_type == "anime"))
+            time.sleep(3600 + random.randint(60, 1860))
 
         post = result.first()
         media_append = []
