@@ -24,17 +24,25 @@ my_model = tf.keras.models.load_model('am_best.keras')
 def post_img():
     session = get_session()
     session = next(session)
+    prev_hour = 9
     while True:
-        time.sleep(10)
         now_hour = datetime.datetime.now().hour
+        if prev_hour == now_hour:
+            time.sleep(600)
+        else:
+            time.sleep(random.randint(0, 60 * 50))
+            prev_hour = now_hour
+
         if now_hour >= 10:
             if now_hour % 4 == 0:
                 result = session.exec(select(Post).where(Post.img_type == "meme"))
             else:
                 result = session.exec(select(Post).where(Post.img_type == "anime"))
         else:
-            time.sleep(3600 + random.randint(60, 1860))
+            time.sleep(600)
             continue
+        if not result.one_or_none():
+            result = session.exec(select(Post))
         post = result.first()
         media_append = []
         if post:
@@ -43,7 +51,6 @@ def post_img():
             bot.send_media_group(CHANNEL_NAME, media_append)
             session.delete(post)
             session.commit()
-            time.sleep(60 * 60 + random.randint(60, 1860))
 
 
 @bot.message_handler(content_types=['photo'])
@@ -55,8 +62,11 @@ def get_text_messages(message):
     session = next(session)
     post = Post(file_id=file_info.file_id, img_type=img_type, caption=message.caption,
                 spoiler=message.has_media_spoiler)
+
     session.add(post)
     session.commit()
+    bot.send_message(message.chat.id, f"{img_type}; \nn in queue: {len(session.exec(select(Post)).all())}",
+                     reply_to_message_id=message.message_id)
 
 
 if __name__ == '__main__':
