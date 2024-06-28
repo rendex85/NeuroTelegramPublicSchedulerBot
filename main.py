@@ -31,7 +31,9 @@ def post_img():
             time.sleep(600)
             continue
         else:
-            time.sleep(random.randint(0, 60 * 59 - datetime.datetime.now().minute))
+            gts = random.randint(0, 60 * 59 - datetime.datetime.now().minute)
+            print(datetime.datetime.now(), gts)
+            time.sleep(gts)
             prev_hour = now_hour
 
         if now_hour >= 10:
