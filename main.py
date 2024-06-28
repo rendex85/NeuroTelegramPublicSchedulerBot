@@ -41,7 +41,7 @@ def post_img():
         else:
             time.sleep(600)
             continue
-        if not result.one_or_none():
+        if not result.first():
             result = session.exec(select(Post))
         post = result.first()
         media_append = []
