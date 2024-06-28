@@ -72,4 +72,10 @@ def get_text_messages(message):
 if __name__ == '__main__':
     p = mp.Process(target=post_img)
     p.start()
-    bot.polling(none_stop=True, interval=0)  # обязательная для работы бота часть
+    while True:
+        try:
+            bot.polling(non_stop=True, interval=0)
+        except Exception as e:
+            print(e)
+            time.sleep(5)
+            continue
