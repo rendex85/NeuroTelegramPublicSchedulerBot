@@ -56,14 +56,6 @@ def post_img():
             session.delete(post)
             session.commit()
 
-        media_append = []
-        if post:
-            media_append.append(
-                telebot.types.InputMediaPhoto(post.file_id, caption=post.caption, has_spoiler=post.spoiler))
-            bot.send_media_group(CHANNEL_NAME, media_append)
-            session.delete(post)
-            session.commit()
-
 
 @bot.message_handler(content_types=['photo'])
 def get_text_messages(message):
