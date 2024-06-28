@@ -30,7 +30,7 @@ def post_img():
         if prev_hour == now_hour:
             time.sleep(600)
         else:
-            time.sleep(random.randint(0, 60 * 50))
+            time.sleep(random.randint(0, 60 * 59 - datetime.datetime.now().minute))
             prev_hour = now_hour
 
         if now_hour >= 10:
