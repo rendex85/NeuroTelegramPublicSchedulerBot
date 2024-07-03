@@ -89,10 +89,10 @@ if __name__ == '__main__':
     p = mp.Process(target=post_img)
     p.start()
     while True:
-        bot.polling(non_stop=True, interval=0)
-        """try:
+        #bot.polling(non_stop=True, interval=0)
+        try:
             bot.polling(non_stop=True, interval=0)
         except Exception as e:
             print(e)
             time.sleep(5)
-            continue"""
+            continue
