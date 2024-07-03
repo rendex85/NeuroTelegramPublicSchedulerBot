@@ -12,10 +12,12 @@ import tensorflow as tf
 from connection import init_db, get_session
 from models import Post
 from predict_anime_or_meme import predict
+from schedule_processing import ScheduleManager
 
 load_dotenv()
 TOKEN = os.getenv("TOKEN")
 bot = telebot.TeleBot(TOKEN)
+bot_manager = ScheduleManager()
 CHANNEL_NAME = os.getenv("CHANNEL_NAME")
 init_db()
 my_model = tf.keras.models.load_model('am_best.keras')
@@ -31,7 +33,7 @@ def post_img():
             time.sleep(600)
             continue
         else:
-            gts = random.randint(0, 60 * 59 - 60*datetime.datetime.now().minute)
+            gts = random.randint(0, 60 * 59 - 60 * datetime.datetime.now().minute)
             print(datetime.datetime.now(), gts)
             time.sleep(gts)
             prev_hour = now_hour
@@ -73,13 +75,24 @@ def get_text_messages(message):
                      reply_to_message_id=message.message_id)
 
 
+@bot.message_handler(content_types=['text'])
+def manage_schedule(message):
+    session = get_session()
+    session = next(session)
+    txt, media, markup = bot_manager.process_command(message, session)
+    bot.send_message(message.chat.id, txt, reply_markup=markup)
+    if media:
+        bot.send_media_group(message.chat.id, media)
+
+
 if __name__ == '__main__':
     p = mp.Process(target=post_img)
     p.start()
     while True:
-        try:
+        bot.polling(non_stop=True, interval=0)
+        """try:
             bot.polling(non_stop=True, interval=0)
         except Exception as e:
             print(e)
             time.sleep(5)
-            continue
+            continue"""
