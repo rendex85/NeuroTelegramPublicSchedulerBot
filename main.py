@@ -36,8 +36,8 @@ def post_img():
         else:
             gts = random.randint(0, 60 * 59 - 60 * datetime.datetime.now().minute)
             print(datetime.datetime.now(), gts)
-            time.sleep(gts)
-            if random.randint(1, 4) != 2 or post_add_meme: # 25% шанс запостить 2 поста где один из них мсем
+            time.sleep(5)
+            if random.randint(1, 3) != 2 or post_add_meme: # 33% шанс запостить 2 поста где один из них мсем
                 prev_hour = now_hour
                 post_add_meme = False
             else:
