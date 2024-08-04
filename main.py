@@ -27,6 +27,7 @@ def post_img():
     session = get_session()
     session = next(session)
     prev_hour = 9
+    post_add_meme = False
     while True:
         now_hour = datetime.datetime.now().hour
         if prev_hour == now_hour:
@@ -36,10 +37,14 @@ def post_img():
             gts = random.randint(0, 60 * 59 - 60 * datetime.datetime.now().minute)
             print(datetime.datetime.now(), gts)
             time.sleep(gts)
-            prev_hour = now_hour
+            if random.randint(1, 4) != 2 or post_add_meme: # 25% шанс запостить 2 поста где один из них мсем
+                prev_hour = now_hour
+                post_add_meme = False
+            else:
+                post_add_meme = True
 
         if now_hour >= 10:
-            if now_hour % 4 == 0:
+            if now_hour % 4 == 0 or post_add_meme:
                 result = session.exec(select(Post).where(Post.img_type == "meme"))
             else:
                 result = session.exec(select(Post).where(Post.img_type == "anime"))
@@ -57,6 +62,7 @@ def post_img():
             bot.send_media_group(CHANNEL_NAME, media_append)
             session.delete(post)
             session.commit()
+            session.close()
 
 
 @bot.message_handler(content_types=['photo'])
@@ -73,6 +79,7 @@ def get_text_messages(message):
     session.commit()
     bot.send_message(message.chat.id, f"{img_type}; \nn in queue: {len(session.exec(select(Post)).all())}",
                      reply_to_message_id=message.message_id)
+    session.close()
 
 
 @bot.message_handler(content_types=['text'])
@@ -83,13 +90,14 @@ def manage_schedule(message):
     bot.send_message(message.chat.id, txt, reply_markup=markup)
     if media:
         bot.send_media_group(message.chat.id, media)
+    session.close()
 
 
 if __name__ == '__main__':
     p = mp.Process(target=post_img)
     p.start()
     while True:
-        #bot.polling(non_stop=True, interval=0)
+        # bot.polling(non_stop=True, interval=0)
         try:
             bot.polling(non_stop=True, interval=0)
         except Exception as e:
