@@ -49,7 +49,7 @@ class ScheduleManager:
         if self.context_data["iteration"]["offset"] > 0:
             self.context_data["iteration"]["offset"] -= 1
         else:
-            self.context_data["iteration"]["offset"]=len(session.exec(select(Post)).all())-1
+            self.context_data["iteration"]["offset"] = len(session.exec(select(Post)).all()) - 1
         result = session.exec(select(Post).offset(self.context_data["iteration"]["offset"]))
         post = result.first()
         self.context_data["post_data"]["post_id"] = post.id
